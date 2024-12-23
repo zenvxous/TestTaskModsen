@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestTaskModsen.API", "TestTaskModsen.API\TestTaskModsen.API.csproj", "{541C34FC-95B3-480C-97EF-515D9D900049}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0577ADED-A753-49E0-9AF2-2BD07B859CCA}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yml = docker-compose.yml
+		.gitignore = .gitignore
+		Readme.md = Readme.md
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestTaskModsen.Core", "TestTaskModsen.Core\TestTaskModsen.Core.csproj", "{F63F6FB3-24D3-4A4E-A5AB-EB32221BD08B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestTaskModsen.Application", "TestTaskModsen.Application\TestTaskModsen.Application.csproj", "{CEC0328F-7377-44B8-B4F6-411D9C95C137}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestTaskModsen.Infrastructure", "TestTaskModsen.Infrastructure\TestTaskModsen.Infrastructure.csproj", "{087DDB8B-18FF-40C4-8BC3-02B7D7BCAADB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestTaskModsen.Persistence", "TestTaskModsen.Persistence\TestTaskModsen.Persistence.csproj", "{46E2899C-69C4-4E49-9CAC-34915A43EE26}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestTaskModsen.Tests", "TestTaskModsen.Tests\TestTaskModsen.Tests.csproj", "{2D13ED6F-2A9F-4392-B0EF-953FBF70FFC9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{541C34FC-95B3-480C-97EF-515D9D900049}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{541C34FC-95B3-480C-97EF-515D9D900049}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{541C34FC-95B3-480C-97EF-515D9D900049}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{541C34FC-95B3-480C-97EF-515D9D900049}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F63F6FB3-24D3-4A4E-A5AB-EB32221BD08B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F63F6FB3-24D3-4A4E-A5AB-EB32221BD08B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F63F6FB3-24D3-4A4E-A5AB-EB32221BD08B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F63F6FB3-24D3-4A4E-A5AB-EB32221BD08B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CEC0328F-7377-44B8-B4F6-411D9C95C137}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CEC0328F-7377-44B8-B4F6-411D9C95C137}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CEC0328F-7377-44B8-B4F6-411D9C95C137}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CEC0328F-7377-44B8-B4F6-411D9C95C137}.Release|Any CPU.Build.0 = Release|Any CPU
+		{087DDB8B-18FF-40C4-8BC3-02B7D7BCAADB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{087DDB8B-18FF-40C4-8BC3-02B7D7BCAADB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{087DDB8B-18FF-40C4-8BC3-02B7D7BCAADB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{087DDB8B-18FF-40C4-8BC3-02B7D7BCAADB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46E2899C-69C4-4E49-9CAC-34915A43EE26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46E2899C-69C4-4E49-9CAC-34915A43EE26}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46E2899C-69C4-4E49-9CAC-34915A43EE26}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46E2899C-69C4-4E49-9CAC-34915A43EE26}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D13ED6F-2A9F-4392-B0EF-953FBF70FFC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D13ED6F-2A9F-4392-B0EF-953FBF70FFC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D13ED6F-2A9F-4392-B0EF-953FBF70FFC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D13ED6F-2A9F-4392-B0EF-953FBF70FFC9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+	EndGlobalSection
+EndGlobal

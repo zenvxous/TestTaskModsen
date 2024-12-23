@@ -1,0 +1,6 @@
+﻿services:
+  testtaskmodsen.api:
+    image: testtaskmodsen.api
+    build:
+      context: .
+      dockerfile: TestTaskModsen.API/Dockerfile

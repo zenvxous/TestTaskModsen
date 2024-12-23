@@ -1,0 +1,14 @@
+TestTaskModsen.API/bin
+TestTaskModsen.API/obj
+TestTaskModsen.Application/bin
+TestTaskModsen.Application/obj
+TestTaskModsen.Core/bin
+TestTaskModsen.Core/obj
+TestTaskModsen.Infrastructure/bin
+TestTaskModsen.Infrastructure/obj
+TestTaskModsen.Persistence/bin
+TestTaskModsen.Persistence/obj
+TestTaskModsen.Tests/bin
+TestTaskModsen.Tests/obj
+.idea
+.DS_Store

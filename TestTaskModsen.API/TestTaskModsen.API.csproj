@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\TestTaskModsen.Application\TestTaskModsen.Application.csproj" />
+      <ProjectReference Include="..\TestTaskModsen.Core\TestTaskModsen.Core.csproj" />
+      <ProjectReference Include="..\TestTaskModsen.Infrastructure\TestTaskModsen.Infrastructure.csproj" />
+      <ProjectReference Include="..\TestTaskModsen.Persistence\TestTaskModsen.Persistence.csproj" />
+    </ItemGroup>
+
+</Project>
