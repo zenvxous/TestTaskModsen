@@ -11,10 +11,16 @@ public class Registration
         Event = @event;
         RegistrationDate = registrationDate;
     }
+    
     public Guid Id { get; private set; }
+    
     public Guid UserId { get; private set; }
+    
     public User User { get; private set; }
+    
     public Guid EventId { get; private set; }
+    
     public Event Event { get; private set; }
+    
     public DateTime RegistrationDate { get; private set; }
 }

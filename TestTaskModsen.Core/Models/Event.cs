@@ -18,14 +18,24 @@ public class Event
         Registrations = registrations;
         ImageData = imageData;
     }
+    
     public Guid Id { get; private set; }
+    
     public string Title { get; private set; }
+    
     public string Description { get; private set; }
+    
     public DateTime StartDate { get; private set; }
+    
     public DateTime EndDate { get; private set; }
+    
     public string Location { get; private set; }
+    
     public EventCategory Category { get; private set; }
+    
     public int Capacity { get; private set; }
+    
     public List<Registration> Registrations { get; private set; }
+    
     public byte[] ImageData { get; private set; }
 }
