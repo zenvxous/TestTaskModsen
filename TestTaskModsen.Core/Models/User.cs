@@ -4,14 +4,14 @@ namespace TestTaskModsen.Core.Models;
 
 public class User
 {
-    public User(Guid id, string firstName, string lastName, string email, string passwordHash, UserRole userRole, List<Registration> registrations)
+    public User(Guid id, string firstName, string lastName, string email, string passwordHash, UserRole role, List<Registration> registrations)
     {
         Id = id;
         FirstName = firstName;
         LastName = lastName;
         Email = email;
         PasswordHash = passwordHash;
-        UserRole = userRole;
+        Role = role;
         Registrations = registrations;
     }
     
@@ -25,7 +25,7 @@ public class User
     
     public string PasswordHash { get; private set; }
     
-    public UserRole UserRole { get; private set; }
+    public UserRole Role { get; private set; }
     
     public List<Registration> Registrations { get; private set; }
 }

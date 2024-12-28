@@ -14,13 +14,13 @@ public class EventEntity
     
     public DateTime EndDate { get; set; }
     
-    public string Location { get; private set; } = string.Empty;
+    public string Location { get; set; } = string.Empty;
     
     public EventCategory Category { get; set; }
     
     public int Capacity { get; set; }
     
     public List<RegistrationEntity> Registrations { get; set; } = [];
-    
-    public byte[] ImageData { get; set; }
+
+    public byte[] ImageData { get; set; } = [];
 }

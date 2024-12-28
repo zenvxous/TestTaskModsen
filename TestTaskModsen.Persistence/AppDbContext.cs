@@ -10,9 +10,9 @@ public class AppDbContext : DbContext
     public AppDbContext(DbContextOptions<AppDbContext> options)
         : base(options) { }
     
-    DbSet<EventEntity> Events { get; set; }
-    DbSet<UserEntity> Users { get; set; }
-    DbSet<RegistrationEntity> Registrations { get; set; }
+    public DbSet<EventEntity> Events { get; set; }
+    public DbSet<UserEntity> Users { get; set; }
+    public DbSet<RegistrationEntity> Registrations { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

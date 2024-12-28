@@ -11,7 +11,21 @@ public class EventConfiguration : IEntityTypeConfiguration<EventEntity>
     {
         builder.HasKey(e => e.Id);
         
-        builder.Property(e => e.Title).IsRequired();
+        builder.Property(e => e.Title)
+            .HasMaxLength(100)
+            .IsRequired();
+        
+        builder.Property(e => e.Description).HasMaxLength(500);
+        
+        builder.Property(e => e.StartDate).IsRequired();
+        
+        builder.Property(e => e.EndDate).IsRequired();
+        
+        builder.Property(e => e.Location).HasMaxLength(50);
+        
+        builder.Property(e => e.Category).IsRequired();
+        
+        builder.Property(e => e.Capacity).IsRequired();
 
         builder
             .HasMany(e => e.Registrations)

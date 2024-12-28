@@ -15,7 +15,7 @@ public class UserEntity
     
     public string PasswordHash { get; set; } = string.Empty;
     
-    public UserRole UserRole { get; set; }
+    public UserRole Role { get; set; }
 
     public List<RegistrationEntity> Registrations { get; set; } = [];
 }
