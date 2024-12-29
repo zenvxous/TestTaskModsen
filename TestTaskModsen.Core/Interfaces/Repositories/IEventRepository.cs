@@ -5,11 +5,13 @@ namespace TestTaskModsen.Core.Interfaces.Repositories;
 
 public interface IEventRepository
 {
-    Task<List<Event>> GetAllAsync();
+    Task<PagedResult<Event>> GetAllAsync(int pageNumber, int pageSize);
     Task<Event> GetByIdAsync(Guid eventId);
     Task<Event> GetByTitleAsync(string title);
 
-    Task<List<Event>> GetByFiltersAsync(
+    Task<PagedResult<Event>> GetByFiltersAsync(
+        int pageNumber,
+        int pageSize,
         DateTime? startDate = null,
         DateTime? endDate = null,
         string? location = null,

@@ -20,4 +20,10 @@ public class UserMapper : IMapper<UserEntity, User>
         );
     
     public List<User> Map(IEnumerable<UserEntity> entities) => entities.Select(Map).ToList();
+    
+    public PagedResult<User> Map(PagedResult<UserEntity> pagedResult) => new PagedResult<User>(
+        pagedResult.Items.Select(Map),
+        pagedResult.TotalItems,
+        pagedResult.PageNumber,
+        pagedResult.PageSize);
 }

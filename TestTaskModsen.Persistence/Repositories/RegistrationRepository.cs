@@ -1,7 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using TestTaskModsen.Core.Interfaces.Mappers;
 using TestTaskModsen.Core.Interfaces.Repositories;
-using TestTaskModsen.Core.Models;
 using TestTaskModsen.Persistence.Entities;
 
 namespace TestTaskModsen.Persistence.Repositories;
@@ -9,12 +7,10 @@ namespace TestTaskModsen.Persistence.Repositories;
 public class RegistrationRepository : IRegistrationRepository
 {
     private readonly AppDbContext _context;
-    private readonly IMapper<RegistrationEntity, Registration> _mapper;
 
-    public RegistrationRepository(AppDbContext context, IMapper<RegistrationEntity, Registration> mapper)
+    public RegistrationRepository(AppDbContext context)
     {
         _context = context;
-        _mapper = mapper;
     }
 
     public async Task RegisterUserToEventAsync(Guid userId, Guid eventId)

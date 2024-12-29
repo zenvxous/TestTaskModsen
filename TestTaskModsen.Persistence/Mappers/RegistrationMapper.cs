@@ -17,4 +17,10 @@ public class RegistrationMapper : IMapper<RegistrationEntity, Registration>
         );
     
     public List<Registration> Map(IEnumerable<RegistrationEntity> entities) => entities.Select(Map).ToList();
+    
+    public PagedResult<Registration> Map(PagedResult<RegistrationEntity> pagedResult) => new PagedResult<Registration>(
+        pagedResult.Items.Select(Map),
+        pagedResult.TotalItems,
+        pagedResult.PageNumber,
+        pagedResult.PageSize);
 }

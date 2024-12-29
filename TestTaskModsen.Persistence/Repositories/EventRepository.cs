@@ -4,6 +4,7 @@ using TestTaskModsen.Core.Interfaces.Mappers;
 using TestTaskModsen.Core.Interfaces.Repositories;
 using TestTaskModsen.Core.Models;
 using TestTaskModsen.Persistence.Entities;
+using TestTaskModsen.Persistence.Extensions;
 
 namespace TestTaskModsen.Persistence.Repositories;
 
@@ -18,12 +19,12 @@ public class EventRepository : IEventRepository
         _mapper = mapper;
     }
 
-    public async Task<List<Event>> GetAllAsync()
+    public async Task<PagedResult<Event>> GetAllAsync(int pageNumber, int pageSize)
     {
         var eventEntities = await _context.Events
             .Include(e => e.Registrations)
             .AsNoTracking()
-            .ToListAsync();
+            .ToPagedResultAsync(pageNumber, pageSize);
         
         return _mapper.Map(eventEntities);
     }
@@ -54,7 +55,9 @@ public class EventRepository : IEventRepository
         return _mapper.Map(eventEntity);
     }
 
-    public async Task<List<Event>> GetByFiltersAsync(
+    public async Task<PagedResult<Event>> GetByFiltersAsync(
+        int pageNumber,
+        int pageSize,
         DateTime? startDate = null,
         DateTime? endDate = null,
         string? location = null,
@@ -68,7 +71,7 @@ public class EventRepository : IEventRepository
                 (!endDate.HasValue || e.EndDate <= endDate.Value) &&
                 (string.IsNullOrEmpty(location) || e.Location.Contains(location)) &&
                 (!category.HasValue || e.Category == category))
-            .ToListAsync();
+            .ToPagedResultAsync(pageNumber, pageSize);
         
         return _mapper.Map(eventEntities);
     }

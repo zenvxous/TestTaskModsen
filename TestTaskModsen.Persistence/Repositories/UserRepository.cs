@@ -3,6 +3,7 @@ using TestTaskModsen.Core.Interfaces.Mappers;
 using TestTaskModsen.Core.Interfaces.Repositories;
 using TestTaskModsen.Core.Models;
 using TestTaskModsen.Persistence.Entities;
+using TestTaskModsen.Persistence.Extensions;
 
 namespace TestTaskModsen.Persistence.Repositories;
 
@@ -43,13 +44,13 @@ public class UserRepository : IUserRepository
         return _mapper.Map(userEntity);
     }
 
-    public async Task<List<User>> GetByEventIdAsync(Guid eventId)
+    public async Task<PagedResult<User>> GetByEventIdAsync(Guid eventId, int pageNumber, int pageSize)
     {
         var userEntities = await _context.Registrations
             .AsNoTracking()
             .Where(r => r.EventId == eventId)
             .Select(r => r.User)
-            .ToListAsync();
+            .ToPagedResultAsync(pageNumber, pageSize);
         
         return _mapper.Map(userEntities);
     }

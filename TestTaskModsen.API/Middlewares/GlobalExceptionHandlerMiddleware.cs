@@ -31,5 +31,4 @@ public class GlobalExceptionHandlerMiddleware
         
         return context.Response.WriteAsync(JsonSerializer.Serialize(ex.Message));
     }
-    
 }

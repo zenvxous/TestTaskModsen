@@ -23,4 +23,10 @@ public class EventMapper : IMapper<EventEntity, Event>
         );
 
     public List<Event> Map(IEnumerable<EventEntity> entities) => entities.Select(Map).ToList();
+
+    public PagedResult<Event> Map(PagedResult<EventEntity> pagedResult) => new PagedResult<Event>(
+        pagedResult.Items.Select(Map),
+        pagedResult.TotalItems,
+        pagedResult.PageNumber,
+        pagedResult.PageSize);
 }
