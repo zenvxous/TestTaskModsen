@@ -29,7 +29,7 @@ builder.Services.AddSingleton<IRegistrationRepository, RegistrationRepository>()
 
 var app = builder.Build();
 
-app.UseException();
+app.UseGlobalExceptionHandler();
 
 if (app.Environment.IsDevelopment())
 {

@@ -3,11 +3,11 @@ using System.Text.Json;
 
 namespace TestTaskModsen.API.Middlewares;
 
-public class ExceptionMiddleware
+public class GlobalExceptionHandlerMiddleware
 {
     private readonly RequestDelegate _next;
 
-    public ExceptionMiddleware(RequestDelegate next)
+    public GlobalExceptionHandlerMiddleware(RequestDelegate next)
     {
         _next = next;
     }
