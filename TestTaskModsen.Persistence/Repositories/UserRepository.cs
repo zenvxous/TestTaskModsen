@@ -24,6 +24,9 @@ public class UserRepository : IUserRepository
             .AsNoTracking()
             .FirstOrDefaultAsync(u => u.Id == id);
         
+        if (userEntity is null)
+            throw new Exception("User not found");
+        
         return _mapper.Map(userEntity);
     }
 
@@ -33,6 +36,9 @@ public class UserRepository : IUserRepository
             .Include(u => u.Registrations)
             .AsNoTracking()
             .FirstOrDefaultAsync(u => u.Email == email);
+        
+        if (userEntity is null)
+            throw new Exception("User not found");
         
         return _mapper.Map(userEntity);
     }

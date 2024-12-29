@@ -34,6 +34,9 @@ public class EventRepository : IEventRepository
             .Include(e => e.Registrations)
             .AsNoTracking()
             .FirstOrDefaultAsync(e => e.Id == eventId);
+
+        if (eventEntity is null)
+            throw new Exception("Event not found");
         
         return _mapper.Map(eventEntity);
     }
@@ -44,6 +47,9 @@ public class EventRepository : IEventRepository
             .Include(e => e.Registrations)
             .AsNoTracking()
             .FirstOrDefaultAsync(e => e.Title == title);
+        
+        if (eventEntity is null)
+            throw new Exception("Event not found");
         
         return _mapper.Map(eventEntity);
     }

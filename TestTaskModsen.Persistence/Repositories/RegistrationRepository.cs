@@ -22,6 +22,9 @@ public class RegistrationRepository : IRegistrationRepository
         var userEntity = await _context.Users.FindAsync(userId);
         var eventEntity = await _context.Events.FindAsync(eventId);
         
+        if (userEntity is null || eventEntity is null)
+            throw new Exception("User or event not found");
+        
         var registration = new RegistrationEntity
         {
             Id = Guid.NewGuid(),
@@ -40,6 +43,9 @@ public class RegistrationRepository : IRegistrationRepository
     {
         var registrationEntity = await _context.Registrations
             .FirstOrDefaultAsync(r => r.UserId == userId && r.EventId == eventId);
+        
+        if (registrationEntity is null)
+            throw new Exception("Registration not found");
         
         _context.Registrations.Remove(registrationEntity);
         

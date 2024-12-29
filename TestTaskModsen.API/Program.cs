@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using TestTaskModsen.API.Extensions;
 using TestTaskModsen.Core.Interfaces.Mappers;
 using TestTaskModsen.Core.Interfaces.Repositories;
 using TestTaskModsen.Core.Models;
@@ -27,6 +28,8 @@ builder.Services.AddSingleton<IEventRepository, EventRepository>();
 builder.Services.AddSingleton<IRegistrationRepository, RegistrationRepository>();
 
 var app = builder.Build();
+
+app.UseException();
 
 if (app.Environment.IsDevelopment())
 {
