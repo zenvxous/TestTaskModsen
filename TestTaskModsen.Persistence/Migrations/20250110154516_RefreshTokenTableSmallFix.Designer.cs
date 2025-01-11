@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TestTaskModsen.Persistence;
@@ -11,9 +12,11 @@ using TestTaskModsen.Persistence;
 namespace TestTaskModsen.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250110154516_RefreshTokenTableSmallFix")]
+    partial class RefreshTokenTableSmallFix
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -67,8 +70,8 @@ namespace TestTaskModsen.Persistence.Migrations
             modelBuilder.Entity("TestTaskModsen.Persistence.Entities.RefreshTokenEntity", b =>
                 {
                     b.Property<string>("Token")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
 
                     b.Property<DateTime>("Expiration")
                         .HasColumnType("timestamp with time zone");

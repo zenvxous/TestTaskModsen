@@ -18,7 +18,6 @@
     <ItemGroup>
       <ProjectReference Include="..\TestTaskModsen.Application\TestTaskModsen.Application.csproj" />
       <ProjectReference Include="..\TestTaskModsen.Core\TestTaskModsen.Core.csproj" />
-      <ProjectReference Include="..\TestTaskModsen.Infrastructure\TestTaskModsen.Infrastructure.csproj" />
       <ProjectReference Include="..\TestTaskModsen.Persistence\TestTaskModsen.Persistence.csproj" />
     </ItemGroup>
 

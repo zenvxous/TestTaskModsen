@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using TestTaskModsen.Core.Enums;
 using TestTaskModsen.Core.Interfaces.Mappers;
 using TestTaskModsen.Core.Interfaces.Repositories;
 using TestTaskModsen.Core.Models;
@@ -53,6 +54,14 @@ public class UserRepository : IUserRepository
             .ToPagedResultAsync(pageNumber, pageSize);
         
         return _mapper.Map(userEntities);
+    }
+
+    public async Task UpdateRoleAsync(Guid userId, UserRole role)
+    {
+        await _context.Users
+            .Where(u => u.Id == userId)
+            .ExecuteUpdateAsync(s => s
+                .SetProperty(x => x.Role, role));
     }
 
     public async Task CreateAsync(User user)
