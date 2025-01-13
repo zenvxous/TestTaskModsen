@@ -2,6 +2,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace TestTaskModsen.API.Contracts.User;
 
-public record class LoginUserRequest(
+public record LoginUserRequest(
     [Required] string Email,
     [Required] string Password);

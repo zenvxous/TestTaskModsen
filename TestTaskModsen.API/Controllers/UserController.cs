@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TestTaskModsen.API.Contracts.Registration;
 using TestTaskModsen.API.Contracts.User;
 using TestTaskModsen.Core.Enums;
 using TestTaskModsen.Core.Interfaces.Services;
-
 
 namespace TestTaskModsen.API.Controllers;
 
@@ -31,7 +31,13 @@ public class UserController : ControllerBase
             user.LastName,
             user.Email,
             user.Role.ToString(),
-            user.Registrations);
+            user.Registrations
+                .Select(r => new RegistrationResponse(
+                    r.Id,
+                    r.UserId,
+                    r.EventId,
+                    r.RegistrationDate))
+                .ToList());
         
         return Ok(response);
     }
@@ -72,7 +78,7 @@ public class UserController : ControllerBase
         return Ok();
     }
 
-    [HttpPut("update-role/{userId:guid}/{roleNumber:int}")]
+    [HttpPut("update-role/")]
     [Authorize(Policy = "AdminOnly")]
     public async Task<IActionResult> UpdateRole(Guid userId, int roleNumber)
     {

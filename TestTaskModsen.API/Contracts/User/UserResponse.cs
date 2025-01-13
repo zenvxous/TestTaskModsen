@@ -1,11 +1,11 @@
-using TestTaskModsen.Core.Models;
+using TestTaskModsen.API.Contracts.Registration;
 
 namespace TestTaskModsen.API.Contracts.User;
 
-public record class UserResponse(
+public record UserResponse(
     Guid Id,
     string FirstName,
     string LastName,
     string Email,
     string Role,
-    List<Registration> Registrations);
+    List<RegistrationResponse> Registrations);
