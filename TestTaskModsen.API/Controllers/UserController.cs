@@ -22,7 +22,7 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("{userId::guid}")]
-    public async Task<ActionResult<UserResponse>> GetUserAsync(Guid userId)
+    public async Task<ActionResult<UserResponse>> GetUser(Guid userId)
     {
         var user = await _userService.GetUserById(userId);
         
@@ -45,7 +45,7 @@ public class UserController : ControllerBase
 
     [HttpGet("current")]
     [Authorize]
-    public ActionResult<Guid> GetCurrentUserIdAsync()
+    public ActionResult<Guid> GetCurrentUserId()
     {
         var context = _httpContextAccessor.HttpContext;
         if (context == null)
@@ -57,7 +57,7 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("event/{eventId::guid}")]
-    public async Task<ActionResult<PagedResult<UserResponse>>> GetUsersByEventId(Guid eventId,int pageNumber, int pageSize)
+    public async Task<ActionResult<PagedResult<UserResponse>>> GetUsersByEventId(Guid eventId, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
     {
         var users = await _userService.GetUsersByEventId(eventId, pageNumber, pageSize);
 
@@ -106,9 +106,9 @@ public class UserController : ControllerBase
         return Ok();
     }
 
-    [HttpPut("update-role")]
+    [HttpPut("update-role/{userId::guid}")]
     [Authorize(Policy = "AdminOnly")]
-    public async Task<IActionResult> UpdateRole(Guid userId, int roleNumber)
+    public async Task<IActionResult> UpdateRole(Guid userId, [FromQuery] int roleNumber)
     {
         if (!Enum.IsDefined(typeof(UserRole), roleNumber))
             return BadRequest();

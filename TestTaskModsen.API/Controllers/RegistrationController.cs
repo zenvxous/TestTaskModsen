@@ -17,7 +17,7 @@ public class RegistrationController : ControllerBase
         _httpContextAccessor = httpContextAccessor;
     }
 
-    [HttpPost("register")]
+    [HttpPost("register/{eventId::guid}")]
     [Authorize]
     public async Task<IActionResult> RegisterUserToEvent(Guid eventId)
     {
@@ -30,7 +30,7 @@ public class RegistrationController : ControllerBase
         return Ok();
     }
 
-    [HttpPost("unregister")]
+    [HttpPost("unregister/{eventId::guid}")]
     [Authorize]
     public async Task<IActionResult> UnregisterUserToEvent(Guid eventId)
     {
