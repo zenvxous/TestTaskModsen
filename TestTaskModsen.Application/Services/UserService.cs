@@ -70,6 +70,11 @@ public class UserService : IUserService
         return await _userRepository.GetByIdAsync(userId);
     }
 
+    public async Task<PagedResult<User>> GetUsersByEventId(Guid eventId, int pagenumber, int pageSize)
+    {
+        return await _userRepository.GetByEventIdAsync(eventId, pagenumber, pageSize);
+    }
+
     public async Task UpdateUserRole(Guid userId, UserRole role)
     {
         await _userRepository.UpdateRoleAsync(userId, role);

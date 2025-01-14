@@ -4,6 +4,7 @@ using TestTaskModsen.API.Contracts.Registration;
 using TestTaskModsen.API.Contracts.User;
 using TestTaskModsen.Core.Enums;
 using TestTaskModsen.Core.Interfaces.Services;
+using TestTaskModsen.Core.Models;
 
 namespace TestTaskModsen.API.Controllers;
 
@@ -42,7 +43,7 @@ public class UserController : ControllerBase
         return Ok(response);
     }
 
-    [HttpGet]
+    [HttpGet("current")]
     [Authorize]
     public ActionResult<Guid> GetCurrentUserIdAsync()
     {
@@ -53,6 +54,33 @@ public class UserController : ControllerBase
         var id = _userService.GetCurrentUserId(context);
         
         return Ok(id);
+    }
+
+    [HttpGet("event/{eventId::guid}")]
+    public async Task<ActionResult<PagedResult<UserResponse>>> GetUsersByEventId(Guid eventId,int pageNumber, int pageSize)
+    {
+        var users = await _userService.GetUsersByEventId(eventId, pageNumber, pageSize);
+
+        var response = new PagedResult<UserResponse>(
+            users.Items
+                .Select(u => new UserResponse(
+                        u.Id,
+                        u.FirstName,
+                        u.LastName,
+                        u.Email,
+                        u.Role.ToString(),
+                        u.Registrations
+                            .Select(r => new RegistrationResponse(
+                                r.Id,
+                                r.UserId,
+                                r.EventId,
+                                r.RegistrationDate))
+                            .ToList())),
+                    users.TotalItems,
+                    users.PageNumber,
+                    users.PageSize);
+        
+        return Ok(response);
     }
 
     [HttpPost("register")]
@@ -78,7 +106,7 @@ public class UserController : ControllerBase
         return Ok();
     }
 
-    [HttpPut("update-role/")]
+    [HttpPut("update-role")]
     [Authorize(Policy = "AdminOnly")]
     public async Task<IActionResult> UpdateRole(Guid userId, int roleNumber)
     {

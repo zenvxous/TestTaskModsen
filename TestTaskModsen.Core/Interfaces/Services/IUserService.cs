@@ -10,5 +10,6 @@ public interface IUserService
     Task<TokenResponse> Login(string email, string password);
     Guid GetCurrentUserId(HttpContext context);
     Task<User> GetUserById(Guid userId);
+    Task<PagedResult<User>> GetUsersByEventId(Guid eventId, int pagenumber, int pageSize);
     Task UpdateUserRole(Guid userId, UserRole role);
 }
