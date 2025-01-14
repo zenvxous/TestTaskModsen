@@ -32,6 +32,16 @@ public class RegistrationService : IRegistrationService
             return false;
         }
     }
+
+    private async Task<bool> IsEventAvailable(Guid eventId)
+    {
+        var @event = await _eventService.GetEventById(eventId);
+
+        if (@event.Capacity <= @event.Registrations.Count) 
+            return false;
+        
+        return true;
+    }
     
     public async Task RegisterUserToEvent(HttpContext context, Guid eventId)
     {
