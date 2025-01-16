@@ -78,8 +78,8 @@ public class EventController : ControllerBase
     [Authorize(Policy = "AdminOnly")]
     public async Task<IActionResult> CreateEvent([FromBody] CreateEventRequest request)
     {
-        var startDate = DateTime.Parse(request.StartDate);
-        var endDate = DateTime.Parse(request.EndDate);
+        var startDate = DateTime.Parse(request.StartDate).ToUniversalTime();
+        var endDate = DateTime.Parse(request.EndDate).ToUniversalTime();
         var category = (EventCategory)request.Category;
 
         var @event = new Event(
@@ -103,8 +103,8 @@ public class EventController : ControllerBase
     [Authorize(Policy = "AdminOnly")]
     public async Task<IActionResult> UpdateEvent([FromBody] UpdateEventRequest request)
     {
-        var startDate = DateTime.Parse(request.StartDate);
-        var endDate = DateTime.Parse(request.EndDate);
+        var startDate = DateTime.Parse(request.StartDate).ToUniversalTime();
+        var endDate = DateTime.Parse(request.EndDate).ToUniversalTime();
         var category = (EventCategory)request.Category;
         
         var @event = new Event(
@@ -142,8 +142,8 @@ public class EventController : ControllerBase
         [FromQuery] string? location = null,
         [FromQuery] int? category = null)
     {
-        DateTime? parsedStartDate = string.IsNullOrEmpty(startDate) ? null : DateTime.Parse(startDate);
-        DateTime? parsedEndDate = string.IsNullOrEmpty(endDate) ? null : DateTime.Parse(endDate);
+        DateTime? parsedStartDate = string.IsNullOrEmpty(startDate) ? null : DateTime.Parse(startDate).ToUniversalTime();
+        DateTime? parsedEndDate = string.IsNullOrEmpty(endDate) ? null : DateTime.Parse(endDate).ToUniversalTime();
         
         EventCategory? parsedCategory = category.HasValue ? (EventCategory)category.Value : null;
         
