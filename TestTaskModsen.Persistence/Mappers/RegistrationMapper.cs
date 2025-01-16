@@ -1,4 +1,3 @@
-using TestTaskModsen.Core.Interfaces;
 using TestTaskModsen.Core.Interfaces.Mappers;
 using TestTaskModsen.Core.Models;
 using TestTaskModsen.Persistence.Entities;
@@ -11,8 +10,8 @@ public class RegistrationMapper : IMapper<RegistrationEntity, Registration>
         new Registration
         (
             entity.Id,
-            new UserMapper().Map(entity.User),
-            new EventMapper().Map(entity.Event),
+            entity.UserId,
+            entity.EventId,
             entity.RegistrationDate
         );
     

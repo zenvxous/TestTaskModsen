@@ -1,4 +1,3 @@
-using TestTaskModsen.Core.Interfaces;
 using TestTaskModsen.Core.Interfaces.Mappers;
 using TestTaskModsen.Core.Models;
 using TestTaskModsen.Persistence.Entities;

@@ -167,7 +167,7 @@ public class EventController : ControllerBase
 
     [HttpPut("image/{eventId::guid}")]
     [Authorize(Policy = "AdminOnly")]
-    public async Task<IActionResult> UpdateEventImage(Guid eventId, [FromForm] IFormFile file)
+    public async Task<IActionResult> UpdateEventImage(Guid eventId, IFormFile file)
     {
         if (file.Length == 0)
             throw new Exception("File is empty");

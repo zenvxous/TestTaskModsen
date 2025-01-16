@@ -2,13 +2,11 @@ namespace TestTaskModsen.Core.Models;
 
 public class Registration
 {
-    public Registration(Guid id, User user, Event @event, DateTime registrationDate)
+    public Registration(Guid id, Guid userId, Guid eventId, DateTime registrationDate)
     {
         Id = id;
-        UserId = user.Id;
-        User = user;
-        EventId = @event.Id;
-        Event = @event;
+        UserId = userId;
+        EventId = eventId;
         RegistrationDate = registrationDate;
     }
     
@@ -16,11 +14,7 @@ public class Registration
     
     public Guid UserId { get; private set; }
     
-    public User User { get; private set; }
-    
     public Guid EventId { get; private set; }
-    
-    public Event Event { get; private set; }
     
     public DateTime RegistrationDate { get; private set; }
 }
