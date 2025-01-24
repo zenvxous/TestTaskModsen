@@ -181,11 +181,10 @@ public class EventController : ControllerBase
     }
 
     [HttpGet("image/{eventId::guid}")]
-    [Authorize(Policy = "AdminOnly")]
     public async Task<IActionResult> GetImageById(Guid eventId)
     {
-        var @event = await _eventService.GetEventById(eventId);
+        var imageData = await _eventService.GetImageData(eventId);
         
-        return File(@event.ImageData, "image/jpeg");
+        return File(imageData, "image/jpeg");
     }
 }

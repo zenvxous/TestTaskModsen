@@ -25,6 +25,7 @@ builder.Services.AddMappers();
 builder.Services.AddRepositories();
 builder.Services.AddServices();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+builder.Services.AddMemoryCache();
 
 var app = builder.Build();
 

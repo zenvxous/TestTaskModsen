@@ -20,5 +20,6 @@ public interface IEventService
         string? location = null,
         EventCategory? category = null);
 
+    Task<byte[]> GetImageData(Guid eventId);
     Task UpdateImageData(Guid eventId, byte[] imageData);
 }

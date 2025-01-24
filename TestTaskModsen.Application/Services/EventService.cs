@@ -1,4 +1,5 @@
 using FluentValidation;
+using Microsoft.Extensions.Caching.Memory;
 using TestTaskModsen.Application.Validators;
 using TestTaskModsen.Core.Enums;
 using TestTaskModsen.Core.Interfaces.Repositories;
@@ -10,10 +11,12 @@ namespace TestTaskModsen.Application.Services;
 public class EventService : IEventService
 {
     private readonly IEventRepository _repository;
+    private readonly IMemoryCache _cache;
 
-    public EventService(IEventRepository repository)
+    public EventService(IEventRepository repository, IMemoryCache cache)
     {
         _repository = repository;
+        _cache = cache;
     }
 
     public async Task<bool> IsEventExistsAsync(Guid eventId)
@@ -76,8 +79,25 @@ public class EventService : IEventService
         return await _repository.GetByFiltersAsync(pageNumber, pageSize, startDate, endDate, location, category);
     }
 
+    public async Task<byte[]> GetImageData(Guid eventId)
+    {
+        var cacheKey = $"ImageData-{eventId}";
+        
+        if (_cache.TryGetValue(cacheKey, out byte[]? imageData))
+            return imageData!;
+        
+        var @event =  await _repository.GetByIdAsync(eventId);
+        
+        var cacheEntryOptions = new MemoryCacheEntryOptions()
+            .SetSlidingExpiration(TimeSpan.FromMinutes(30));
+        _cache.Set(cacheKey, @event.ImageData, cacheEntryOptions);
+        
+        return @event.ImageData;
+    }
+
     public async Task UpdateImageData(Guid eventId, byte[] imageData)
     {
         await _repository.UpdateImageDataAsync(eventId, imageData);
+        _cache.Remove($"ImageData-{eventId}");
     }
 }

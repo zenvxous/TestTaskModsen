@@ -52,6 +52,8 @@ public class RegistrationService : IRegistrationService
         
         if (await IsUserRegisteredToEvent(userId, eventId))
             throw new Exception("User already registered");
+        if(!await IsEventAvailable(eventId))
+            throw new Exception($"Event with id {eventId} not available");
         
         await _registrationRepository.RegisterUserToEventAsync(userId, eventId);
     }
