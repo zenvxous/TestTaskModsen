@@ -1,4 +1,15 @@
 ﻿services:
+  tests:
+    image: postgres:latest
+    container_name: TestTaskModsen_Db_Tests
+    environment:
+      POSTGRES_DB: "TestTaskModsen"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./database:/var/lib/postgresql
   postgres:
     image: postgres:latest
     container_name: TestTaskModsen_Db
