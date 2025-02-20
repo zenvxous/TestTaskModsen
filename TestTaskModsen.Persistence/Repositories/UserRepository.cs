@@ -19,52 +19,54 @@ public class UserRepository : IUserRepository
         _mapper = mapper;
     }
 
-    public async Task<User> GetByIdAsync(Guid id)
+    public async Task<User> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var userEntity = await _context.Users
             .Include(u => u.Registrations)
             .AsNoTracking()
-            .FirstOrDefaultAsync(u => u.Id == id);
+            .FirstOrDefaultAsync(u => u.Id == id, cancellationToken);
         
         if (userEntity is null)
-            throw new Exception("User not found");
+            throw new KeyNotFoundException("User not found");
         
         return _mapper.Map(userEntity);
     }
 
-    public async Task<User> GetByEmailAsync(string email)
+    public async Task<User> GetByEmailAsync(string email, CancellationToken cancellationToken)
     {
         var userEntity = await _context.Users
             .Include(u => u.Registrations)
             .AsNoTracking()
-            .FirstOrDefaultAsync(u => u.Email == email);
+            .FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
         
         if (userEntity is null)
-            throw new Exception("User not found");
+            throw new KeyNotFoundException("User not found");
         
         return _mapper.Map(userEntity);
     }
 
-    public async Task<PagedResult<User>> GetByEventIdAsync(Guid eventId, int pageNumber, int pageSize)
+    public async Task<PagedResult<User>> GetByEventIdAsync(Guid eventId, int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
         var userEntities = await _context.Registrations
             .AsNoTracking()
             .Where(r => r.EventId == eventId)
             .Select(r => r.User)
-            .ToPagedResultAsync(pageNumber, pageSize);
+            .ToPagedResultAsync(pageNumber, pageSize, cancellationToken);
         
         return _mapper.Map(userEntities);
     }
 
-    public async Task UpdateRoleAsync(Guid userId, UserRole role)
+    public async Task UpdateRoleAsync(Guid userId, UserRole role, CancellationToken cancellationToken)
     {
-        await _context.Users
-            .Where(u => u.Id == userId)
-            .ExecuteUpdateAsync(s => s
-                .SetProperty(x => x.Role, role));
+        var userEntity = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
+        if (userEntity is null)
+            throw new KeyNotFoundException("User not found");
+        
+        userEntity.Role = role;
+        await _context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task CreateAsync(User user)
+    public async Task CreateAsync(User user, CancellationToken cancellationToken)
     {
         var userEntity = new UserEntity
         {
@@ -77,7 +79,7 @@ public class UserRepository : IUserRepository
             Registrations = []
         };
         
-        await _context.Users.AddAsync(userEntity);
-        await _context.SaveChangesAsync();
+        await _context.Users.AddAsync(userEntity, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
     }
 }

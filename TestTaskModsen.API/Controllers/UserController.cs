@@ -9,7 +9,7 @@ using TestTaskModsen.Core.Models;
 namespace TestTaskModsen.API.Controllers;
 
 [ApiController]
-[Route("api/user")]
+[Route("api/users")]
 public class UserController : ControllerBase
 {
     private readonly IUserService _userService;
@@ -21,10 +21,10 @@ public class UserController : ControllerBase
         _httpContextAccessor = httpContextAccessor;
     }
 
-    [HttpGet("{userId::guid}")]
-    public async Task<ActionResult<UserResponse>> GetUser(Guid userId)
+    [HttpGet("{id::guid}")]
+    public async Task<ActionResult<UserResponse>> GetUser(Guid id, CancellationToken cancellationToken)
     {
-        var user = await _userService.GetUserById(userId);
+        var user = await _userService.GetUserById(id, cancellationToken);
         
         var response = new UserResponse(
             user.Id,
@@ -43,23 +43,27 @@ public class UserController : ControllerBase
         return Ok(response);
     }
 
-    [HttpGet("current")]
+    [HttpGet("me")]
     [Authorize]
     public ActionResult<Guid> GetCurrentUserId()
     {
         var context = _httpContextAccessor.HttpContext;
         if (context == null)
-            throw new Exception("HTTP context is not available.");
+            throw new InvalidOperationException("HTTP context is not available.");
         
         var id = _userService.GetCurrentUserId(context);
         
         return Ok(id);
     }
 
-    [HttpGet("event/{eventId::guid}")]
-    public async Task<ActionResult<PagedResult<UserResponse>>> GetUsersByEventId(Guid eventId, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+    [HttpGet("events/{eventId::guid}")]
+    public async Task<ActionResult<PagedResult<UserResponse>>> GetUsersByEventId(
+        Guid eventId,
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 10,
+        CancellationToken cancellationToken = default)
     {
-        var users = await _userService.GetUsersByEventId(eventId, pageNumber, pageSize);
+        var users = await _userService.GetUsersByEventId(eventId, pageNumber, pageSize, cancellationToken);
 
         var response = new PagedResult<UserResponse>(
             users.Items
@@ -84,21 +88,26 @@ public class UserController : ControllerBase
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] RegisterUserRequest request)
+    public async Task<IActionResult> Register([FromBody] RegisterUserRequest request, CancellationToken cancellationToken)
     {
-        await _userService.RegisterUser(request.Email, request.Password, request.FirstName, request.LastName);
+        await _userService.RegisterUser(
+            request.Email,
+            request.Password,
+            request.FirstName,
+            request.LastName,
+            cancellationToken);
         
         return Ok();
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] LoginUserRequest request)
+    public async Task<IActionResult> Login([FromBody] LoginUserRequest request, CancellationToken cancellationToken)
     {
-        var tokenResponse = await _userService.Login(request.Email, request.Password);
+        var tokenResponse = await _userService.Login(request.Email, request.Password, cancellationToken);
         
         var context = _httpContextAccessor.HttpContext;
         if (context == null)
-            throw new Exception("HTTP context is not available.");
+            throw new InvalidOperationException("HTTP context is not available.");
         
         context.Response.Cookies.Append("_at", tokenResponse.AccessToken);
         context.Response.Cookies.Append("_rt", tokenResponse.RefreshToken);
@@ -106,16 +115,16 @@ public class UserController : ControllerBase
         return Ok();
     }
 
-    [HttpPut("update-role/{userId::guid}")]
+    [HttpPut("{id::guid}/role")]
     [Authorize(Policy = "AdminOnly")]
-    public async Task<IActionResult> UpdateRole(Guid userId, [FromQuery] int roleNumber)
+    public async Task<IActionResult> UpdateRole(Guid id, [FromQuery] int roleNumber, CancellationToken cancellationToken)
     {
         if (!Enum.IsDefined(typeof(UserRole), roleNumber))
             return BadRequest();
 
         var role = (UserRole)roleNumber;
         
-        await _userService.UpdateUserRole(userId, role);
+        await _userService.UpdateUserRole(id, role, cancellationToken);
         
         return Ok();
     }

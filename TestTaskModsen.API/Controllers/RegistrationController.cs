@@ -5,7 +5,7 @@ using TestTaskModsen.Core.Interfaces.Services;
 namespace TestTaskModsen.API.Controllers;
 
 [ApiController]
-[Route("registration")]
+[Route("api/registrations")]
 public class RegistrationController : ControllerBase
 {
     private readonly IRegistrationService _registrationService;
@@ -17,28 +17,28 @@ public class RegistrationController : ControllerBase
         _httpContextAccessor = httpContextAccessor;
     }
 
-    [HttpPost("register/{eventId::guid}")]
+    [HttpPost("{eventId:guid}")]
     [Authorize]
-    public async Task<IActionResult> RegisterUserToEvent(Guid eventId)
+    public async Task<IActionResult> RegisterUserToEvent(Guid eventId, CancellationToken cancellationToken)
     {
         var context = _httpContextAccessor.HttpContext;
         if (context == null)
-            throw new Exception("HTTP context is not available.");
+            throw new InvalidOperationException("HTTP context is not available.");
         
-        await _registrationService.RegisterUserToEvent(context, eventId);
+        await _registrationService.RegisterUserToEvent(context, eventId, cancellationToken);
         
         return Ok();
     }
 
-    [HttpPost("unregister/{eventId::guid}")]
+    [HttpDelete("{eventId:guid}")]
     [Authorize]
-    public async Task<IActionResult> UnregisterUserToEvent(Guid eventId)
+    public async Task<IActionResult> UnregisterUserToEvent(Guid eventId, CancellationToken cancellationToken)
     {
         var context = _httpContextAccessor.HttpContext;
         if (context == null)
-            throw new Exception("HTTP context is not available.");
+            throw new InvalidOperationException("HTTP context is not available.");
         
-        await _registrationService.UnregisterUserToEvent(context, eventId);
+        await _registrationService.UnregisterUserToEvent(context, eventId, cancellationToken);
         
         return Ok();
     }

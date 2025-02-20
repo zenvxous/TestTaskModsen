@@ -17,13 +17,13 @@ public class RegistrationRepository : IRegistrationRepository
         _mapper = mapper;
     }
 
-    public async Task RegisterUserToEventAsync(Guid userId, Guid eventId)
+    public async Task RegisterUserToEventAsync(Guid userId, Guid eventId, CancellationToken cancellationToken)
     {
-        var userEntity = await _context.Users.FindAsync(userId);
-        var eventEntity = await _context.Events.FindAsync(eventId);
+        var userEntity = await _context.Users.FindAsync(new object[] { userId }, cancellationToken);
+        var eventEntity = await _context.Events.FindAsync(new object[] { eventId }, cancellationToken);
         
         if (userEntity is null || eventEntity is null)
-            throw new Exception("User or event not found");
+            throw new KeyNotFoundException("User or event not found");
         
         var registration = new RegistrationEntity
         {
@@ -35,31 +35,31 @@ public class RegistrationRepository : IRegistrationRepository
             RegistrationDate = DateTime.UtcNow,
         };
         
-        await _context.Registrations.AddAsync(registration);
-        await _context.SaveChangesAsync();
+        await _context.Registrations.AddAsync(registration, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task UnregisterUserFromEventAsync(Guid userId, Guid eventId)
+    public async Task UnregisterUserFromEventAsync(Guid userId, Guid eventId, CancellationToken cancellationToken)
     {
         var registrationEntity = await _context.Registrations
-            .FirstOrDefaultAsync(r => r.UserId == userId && r.EventId == eventId);
+            .FirstOrDefaultAsync(r => r.UserId == userId && r.EventId == eventId, cancellationToken);
         
         if (registrationEntity is null)
-            throw new Exception("Registration not found");
+            throw new KeyNotFoundException("Registration not found");
         
         _context.Registrations.Remove(registrationEntity);
         
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<Registration> GetByUserAndEventIdAsync(Guid userId, Guid eventId)
+    public async Task<Registration> GetByUserAndEventIdAsync(Guid userId, Guid eventId, CancellationToken cancellationToken)
     {
         var registrationEntity = await _context.Registrations
             .AsNoTracking()
-            .FirstOrDefaultAsync(r => r.UserId == userId && r.EventId == eventId);
+            .FirstOrDefaultAsync(r => r.UserId == userId && r.EventId == eventId, cancellationToken);
 
         if (registrationEntity is null)
-            throw new Exception("Registration not found");
+            throw new KeyNotFoundException("Registration not found");
         
         return _mapper.Map(registrationEntity);
     }

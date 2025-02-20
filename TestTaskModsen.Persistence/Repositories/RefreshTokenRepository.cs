@@ -14,36 +14,37 @@ public class RefreshTokenRepository : IRefreshTokenRepository
         _context = context;
     }
 
-    public async Task<(string Token, DateTime Expiration)> GetByUserIdAsync(Guid userId)
+    public async Task<(string Token, DateTime Expiration)> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken)
     {
         var tokenEntity = await _context.RefreshTokens
             .AsNoTracking()
-            .FirstOrDefaultAsync(rt => rt.UserId == userId);
+            .FirstOrDefaultAsync(rt => rt.UserId == userId, cancellationToken);
 
         if (tokenEntity is null)
-            throw new Exception("Token not found");
+            throw new KeyNotFoundException("Token not found");
         
         return (tokenEntity.Token, tokenEntity.Expiration);
     }
 
-    public async Task<(string Token, DateTime Expiration)> GetByTokenAsync(string token)
+    public async Task<(string Token, DateTime Expiration)> GetByTokenAsync(string token, CancellationToken cancellationToken)
     {
         var tokenEntity = await _context.RefreshTokens
             .AsNoTracking()
-            .FirstOrDefaultAsync(rt => rt.Token == token);
+            .FirstOrDefaultAsync(rt => rt.Token == token, cancellationToken);
         
         if (tokenEntity is null)
-            throw new Exception("Token not found");
+            throw new KeyNotFoundException("Token not found");
         
         return (tokenEntity.Token, tokenEntity.Expiration);
     }
 
-    public async Task CreateAsync(User user, string token, DateTime expiration)
+    public async Task CreateAsync(User user, string token, DateTime expiration, CancellationToken cancellationToken)
     {
-        var userEntity = await _context.Users.FindAsync(user.Id);
+        var userEntity = await _context.Users
+            .FirstOrDefaultAsync(u => u.Id == user.Id, cancellationToken);
 
         if (userEntity is null)
-            throw new Exception("User not found");
+            throw new KeyNotFoundException("User not found");
         
         var existingTokens = _context.RefreshTokens.Where(t => t.UserId == userEntity.Id);
         _context.RefreshTokens.RemoveRange(existingTokens);
@@ -56,19 +57,19 @@ public class RefreshTokenRepository : IRefreshTokenRepository
             Expiration = expiration
         };
         
-        await _context.RefreshTokens.AddAsync(tokenEntity);
-        await _context.SaveChangesAsync();
+        await _context.RefreshTokens.AddAsync(tokenEntity, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task DeleteByTokenAsync(string token)
+    public async Task DeleteByTokenAsync(string token, CancellationToken cancellationToken)
     {
         var tokenEntity = await _context.RefreshTokens
-            .FirstOrDefaultAsync(rt => rt.Token == token);
+            .FirstOrDefaultAsync(rt => rt.Token == token, cancellationToken);
 
         if (tokenEntity is null)
-            throw new Exception("Token not found");
+            throw new KeyNotFoundException("Token not found");
         
         _context.RefreshTokens.Remove(tokenEntity);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
     }
 }

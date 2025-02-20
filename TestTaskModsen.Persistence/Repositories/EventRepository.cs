@@ -19,38 +19,38 @@ public class EventRepository : IEventRepository
         _mapper = mapper;
     }
 
-    public async Task<PagedResult<Event>> GetAllAsync(int pageNumber, int pageSize)
+    public async Task<PagedResult<Event>> GetAllAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
         var eventEntities = await _context.Events
             .Include(e => e.Registrations)
             .AsNoTracking()
-            .ToPagedResultAsync(pageNumber, pageSize);
+            .ToPagedResultAsync(pageNumber, pageSize, cancellationToken);
         
         return _mapper.Map(eventEntities);
     }
 
-    public async Task<Event> GetByIdAsync(Guid eventId)
+    public async Task<Event> GetByIdAsync(Guid eventId, CancellationToken cancellationToken)
     {
         var eventEntity = await _context.Events
             .Include(e => e.Registrations)
             .AsNoTracking()
-            .FirstOrDefaultAsync(e => e.Id == eventId);
+            .FirstOrDefaultAsync(e => e.Id == eventId, cancellationToken);
 
         if (eventEntity is null)
-            throw new Exception("Event not found");
+            throw new KeyNotFoundException("Event not found");
         
         return _mapper.Map(eventEntity);
     }
 
-    public async Task<Event> GetByTitleAsync(string title)
+    public async Task<Event> GetByTitleAsync(string title, CancellationToken cancellationToken)
     {
         var eventEntity = await _context.Events
             .Include(e => e.Registrations)
             .AsNoTracking()
-            .FirstOrDefaultAsync(e => e.Title == title);
+            .FirstOrDefaultAsync(e => e.Title == title, cancellationToken);
         
         if (eventEntity is null)
-            throw new Exception("Event not found");
+            throw new KeyNotFoundException("Event not found");
         
         return _mapper.Map(eventEntity);
     }
@@ -61,7 +61,8 @@ public class EventRepository : IEventRepository
         DateTime? startDate = null,
         DateTime? endDate = null,
         string? location = null,
-        EventCategory? category = null)
+        EventCategory? category = null,
+        CancellationToken cancellationToken = default)
     {
         var eventEntities = await _context.Events
             .Include(e => e.Registrations)
@@ -71,12 +72,12 @@ public class EventRepository : IEventRepository
                 (!endDate.HasValue || e.EndDate <= endDate.Value) &&
                 (string.IsNullOrEmpty(location) || e.Location.Contains(location)) &&
                 (!category.HasValue || e.Category == category))
-            .ToPagedResultAsync(pageNumber, pageSize);
+            .ToPagedResultAsync(pageNumber, pageSize, cancellationToken);
         
         return _mapper.Map(eventEntities);
     }
     
-    public async Task CreateAsync(Event @event)
+    public async Task CreateAsync(Event @event, CancellationToken cancellationToken)
     {
         var eventEntity = new EventEntity
         {
@@ -92,36 +93,43 @@ public class EventRepository : IEventRepository
             ImageData = @event.ImageData
         };
         
-        await _context.Events.AddAsync(eventEntity);
-        await _context.SaveChangesAsync();
+        await _context.Events.AddAsync(eventEntity, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task UpdateAsync(Event @event)
+    public async Task UpdateAsync(Event @event, CancellationToken cancellationToken)
     {
-        await _context.Events
-            .Where(e => e.Id == @event.Id)
-            .ExecuteUpdateAsync(s => s
-                .SetProperty(e => e.Title, @event.Title)
-                .SetProperty(e => e.Description, @event.Description)
-                .SetProperty(e => e.StartDate, @event.StartDate)
-                .SetProperty(e => e.EndDate, @event.EndDate)
-                .SetProperty(e => e.Location, @event.Location)
-                .SetProperty(e => e.Category, @event.Category)
-                .SetProperty(e => e.Capacity, @event.Capacity));
+        var eventEntity = await _context.Events.FindAsync([@event.Id], cancellationToken);
+        if (eventEntity == null)
+            throw new KeyNotFoundException("Event not found");
+        
+        eventEntity.Title = @event.Title;
+        eventEntity.Description = @event.Description;
+        eventEntity.StartDate = @event.StartDate;
+        eventEntity.EndDate = @event.EndDate;
+        eventEntity.Location = @event.Location;
+        eventEntity.Category = @event.Category;
+        eventEntity.Capacity = @event.Capacity;
+
+        await _context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task UpdateImageDataAsync(Guid eventId, byte[] imageData)
-    {
-        await _context.Events
-            .Where(e => e.Id == eventId)
-            .ExecuteUpdateAsync(s => s
-                .SetProperty(e => e.ImageData, imageData));
-    }
-
-    public async Task DeleteAsync(Guid eventId)
+    public async Task UpdateImageDataAsync(Guid eventId, byte[] imageData, CancellationToken cancellationToken)
     {
         await _context.Events
             .Where(e => e.Id == eventId)
-            .ExecuteDeleteAsync();
+            .ExecuteUpdateAsync(s => s
+                .SetProperty(e => e.ImageData, imageData),
+                cancellationToken);
+    }
+
+    public async Task DeleteAsync(Guid eventId, CancellationToken cancellationToken)
+    {
+        var eventEntity = await _context.Events.FindAsync([eventId], cancellationToken);
+        if (eventEntity == null)
+            throw new KeyNotFoundException("Event not found");
+        
+        _context.Events.Remove(eventEntity);
+        await _context.SaveChangesAsync(cancellationToken);
     }
 }

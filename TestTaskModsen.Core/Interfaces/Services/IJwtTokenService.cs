@@ -5,6 +5,6 @@ namespace TestTaskModsen.Core.Interfaces.Services;
 
 public interface IJwtTokenService
 {
-    Task<TokenResponse> GenerateTokens(User user);
-    Task<TokenResponse> UpdateTokens(HttpContext context);
+    Task<TokenResponse> GenerateTokens(User user, CancellationToken cancellationToken);
+    Task<TokenResponse> UpdateTokens(HttpContext context, CancellationToken cancellationToken);
 }

@@ -37,6 +37,8 @@ public class UserRepositoryTests : IDisposable
     public async Task GetByIdAsync_UserExists_ReturnsUser()
     {
         // Arrange
+        var cancellationToken = default(CancellationToken);
+        
         var userId = Guid.NewGuid();
         var userEntity = new UserEntity
         {
@@ -76,13 +78,13 @@ public class UserRepositoryTests : IDisposable
         userEntity.Registrations.Add(registrationEntity);
         eventEntity.Registrations.Add(registrationEntity);
         
-        await _context.Users.AddAsync(userEntity);
-        await _context.Events.AddAsync(eventEntity);
-        await _context.Registrations.AddAsync(registrationEntity);
-        await _context.SaveChangesAsync();
+        await _context.Users.AddAsync(userEntity, cancellationToken);
+        await _context.Events.AddAsync(eventEntity, cancellationToken);
+        await _context.Registrations.AddAsync(registrationEntity, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
         
         // Act
-        var user = await _repository.GetByIdAsync(userId);
+        var user = await _repository.GetByIdAsync(userId, cancellationToken);
         
         // Assert
         Assert.Equal(userId, user.Id);
@@ -101,16 +103,20 @@ public class UserRepositoryTests : IDisposable
     public async Task GetByIdAsync_UserDoesNotExist_ThrowException()
     {
         // Arrange
+        var cancellationToken = default(CancellationToken);
+        
         var userId = Guid.NewGuid();
         
         // Act & Assert
-        await Assert.ThrowsAsync<Exception>(async () =>  await _repository.GetByIdAsync(userId));
+        await Assert.ThrowsAsync<KeyNotFoundException>(async () =>  await _repository.GetByIdAsync(userId, cancellationToken));
     }
 
     [Fact]
     public async Task UpdateRoleAsync_UserExists_UpdatesRole()
     {
         // Arrange
+        var cancellationToken = default(CancellationToken);
+        
         var userId = Guid.NewGuid();
         var userEntity = new UserEntity
         {
@@ -123,14 +129,14 @@ public class UserRepositoryTests : IDisposable
             Registrations = []
         };
         
-        await _context.Users.AddAsync(userEntity);
-        await _context.SaveChangesAsync();
+        await _context.Users.AddAsync(userEntity, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
         
         var newRole = UserRole.Admin;
         
         // Act
-        await _repository.UpdateRoleAsync(userId, newRole);
-        var user = await _repository.GetByIdAsync(userId);
+        await _repository.UpdateRoleAsync(userId, newRole, cancellationToken);
+        var user = await _repository.GetByIdAsync(userId, cancellationToken);
         
         // Assert
         Assert.Equal(userId, user.Id);

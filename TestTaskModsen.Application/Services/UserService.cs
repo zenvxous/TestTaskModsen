@@ -26,33 +26,33 @@ public class UserService : IUserService
         _passwordHasher = passwordHasher;
     }
 
-    public async Task RegisterUser(string email, string password, string firstName, string lastName)
+    public async Task RegisterUser(string email, string password, string firstName, string lastName, CancellationToken cancellationToken)
     {
         var passwordHash = _passwordHasher.HashPassword(password);
         
         var user = new User(Guid.NewGuid(), firstName, lastName, email, passwordHash, UserRole.User, []);
 
         var userValidator = new UserValidator();
-        await userValidator.ValidateAndThrowAsync(user);
+        await userValidator.ValidateAndThrowAsync(user, cancellationToken);
 
         try
         {
-            await _userRepository.GetByEmailAsync(user.Email);
+            await _userRepository.GetByEmailAsync(user.Email, cancellationToken);
         }
         catch
         {
-            await _userRepository.CreateAsync(user);
+            await _userRepository.CreateAsync(user, cancellationToken);
         }
     }
 
-    public async Task<TokenResponse> Login(string email, string password)
+    public async Task<TokenResponse> Login(string email, string password, CancellationToken cancellationToken)
     {
-        var user = await _userRepository.GetByEmailAsync(email);
+        var user = await _userRepository.GetByEmailAsync(email, cancellationToken);
 
         if (!_passwordHasher.VerifyPasswordHash(password, user.PasswordHash))
             throw new UnauthorizedAccessException("Incorrect password.");
 
-        return await _jwtTokenService.GenerateTokens(user);
+        return await _jwtTokenService.GenerateTokens(user, cancellationToken);
     }
 
     public Guid GetCurrentUserId(HttpContext context)
@@ -65,18 +65,20 @@ public class UserService : IUserService
         return Guid.Parse(jwtToken.Claims.FirstOrDefault(x => x.Type == "sub")!.Value);
     }
 
-    public async Task<User> GetUserById(Guid userId)
+    public async Task<User> GetUserById(Guid userId, CancellationToken cancellationToken)
     {
-        return await _userRepository.GetByIdAsync(userId);
+        return await _userRepository.GetByIdAsync(userId, cancellationToken);
     }
 
-    public async Task<PagedResult<User>> GetUsersByEventId(Guid eventId, int pagenumber, int pageSize)
+    public async Task<PagedResult<User>> GetUsersByEventId(Guid eventId, int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
-        return await _userRepository.GetByEventIdAsync(eventId, pagenumber, pageSize);
+        return await _userRepository.GetByEventIdAsync(eventId, pageNumber, pageSize, cancellationToken);
     }
 
-    public async Task UpdateUserRole(Guid userId, UserRole role)
+    public async Task UpdateUserRole(Guid userId, UserRole role, CancellationToken cancellationToken)
     {
-        await _userRepository.UpdateRoleAsync(userId, role);
+        await _userRepository.GetByIdAsync(userId, cancellationToken);
+        
+        await _userRepository.UpdateRoleAsync(userId, role, cancellationToken);
     }
 }

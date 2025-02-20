@@ -1,12 +1,13 @@
 using System.ComponentModel.DataAnnotations;
+using TestTaskModsen.Core.Enums;
 
 namespace TestTaskModsen.API.Contracts.Event;
 
 public record CreateEventRequest(
     [Required] string Title,
     [Required] string Description,
-    [Required] string StartDate,
-    [Required] string EndDate,
+    [Required] DateTime StartDate,
+    [Required] DateTime EndDate,
     [Required] string Location,
-    [Required] int Category,
+    [Required] EventCategory Category,
     [Required] int Capacity);

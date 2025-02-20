@@ -1,4 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Authentication;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -26,7 +27,7 @@ public class JwtTokenService : IJwtTokenService
         _jwtSettings = jwtSettings.Value;
     }
     
-    public async Task<TokenResponse> GenerateTokens(User user)
+    public async Task<TokenResponse> GenerateTokens(User user, CancellationToken cancellationToken)
     {
         var accessToken = GenerateAccessToken(user);
         var refreshToken = GenerateRefreshToken();
@@ -38,28 +39,28 @@ public class JwtTokenService : IJwtTokenService
             Expiration = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationDays)
         };
         
-        await _refreshTokenRepository.CreateAsync(user, tokens.RefreshToken, tokens.Expiration);
+        await _refreshTokenRepository.CreateAsync(user, tokens.RefreshToken, tokens.Expiration, cancellationToken);
         
         return tokens;
     }
 
-    public async Task<TokenResponse> UpdateTokens(HttpContext context)
+    public async Task<TokenResponse> UpdateTokens(HttpContext context, CancellationToken cancellationToken)
     {
         var accessToken = context.Request.Cookies.FirstOrDefault(x => x.Key == "_at").Value;
         var refreshToken = context.Request.Cookies.FirstOrDefault(x => x.Key == "_rt").Value;
         
-        var token = await _refreshTokenRepository.GetByTokenAsync(refreshToken);
+        var token = await _refreshTokenRepository.GetByTokenAsync(refreshToken, cancellationToken);
 
         if (token.Expiration < DateTime.UtcNow)
-            throw new Exception("The refresh token has expired");
+            throw new AuthenticationException("The refresh token has expired");
         
         var handler = new JwtSecurityTokenHandler();
         var jwtToken = handler.ReadJwtToken(accessToken);
         
         var userId = Guid.Parse(jwtToken.Claims.FirstOrDefault(x => x.Type == "sub")!.Value);
-        var user = await _userRepository.GetByIdAsync(userId);
+        var user = await _userRepository.GetByIdAsync(userId, cancellationToken);
         
-        return await GenerateTokens(user);
+        return await GenerateTokens(user, cancellationToken);
     }
     
     private string GenerateAccessToken(User user)

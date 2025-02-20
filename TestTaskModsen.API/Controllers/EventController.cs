@@ -9,7 +9,7 @@ using TestTaskModsen.Core.Models;
 namespace TestTaskModsen.API.Controllers;
 
 [ApiController]
-[Route("event")]
+[Route("api/events")]
 public class EventController : ControllerBase
 {
     private readonly IEventService _eventService;
@@ -40,9 +40,9 @@ public class EventController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<PagedResult<EventResponse>>> GetAllEvents([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+    public async Task<ActionResult<PagedResult<EventResponse>>> GetAllEvents([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, CancellationToken cancellationToken = default)
     {
-        var events = await _eventService.GetAllEvents(pageNumber, pageSize);
+        var events = await _eventService.GetAllEvents(pageNumber, pageSize, cancellationToken);
         
         var response = new PagedResult<EventResponse>(
             events.Items
@@ -54,20 +54,20 @@ public class EventController : ControllerBase
         return Ok(response);
     }
 
-    [HttpGet("{eventId::guid}")]
-    public async Task<ActionResult<EventResponse>> GetEventById(Guid eventId)
+    [HttpGet("{id::guid}")]
+    public async Task<ActionResult<EventResponse>> GetEventById(Guid id, CancellationToken cancellationToken)
     {
-        var @event = await _eventService.GetEventById(eventId);
+        var @event = await _eventService.GetEventById(id, cancellationToken);
 
         var response = CreateEventResponse(@event);
         
         return Ok(response);
     }
 
-    [HttpGet("{eventTitle::alpha}")]
-    public async Task<ActionResult<EventResponse>> GetEventByTitle(string eventTitle)
+    [HttpGet("title/{title}")]
+    public async Task<ActionResult<EventResponse>> GetEventByTitle(string title, CancellationToken cancellationToken)
     {
-        var @event = await _eventService.GetEventByTitle(eventTitle);
+        var @event = await _eventService.GetEventByTitle(title, cancellationToken);
         
         var response = CreateEventResponse(@event);
         
@@ -76,59 +76,45 @@ public class EventController : ControllerBase
 
     [HttpPost]
     [Authorize(Policy = "AdminOnly")]
-    public async Task<IActionResult> CreateEvent([FromBody] CreateEventRequest request)
+    public async Task<IActionResult> CreateEvent([FromBody] CreateEventRequest request, CancellationToken cancellationToken)
     {
-        var startDate = DateTime.Parse(request.StartDate).ToUniversalTime();
-        var endDate = DateTime.Parse(request.EndDate).ToUniversalTime();
-        var category = (EventCategory)request.Category;
-
-        var @event = new Event(
+        await _eventService.CreateEvent(
             Guid.NewGuid(),
             request.Title,
             request.Description,
-            startDate,
-            endDate,
+            request.StartDate,
+            request.EndDate,
             request.Location,
-            category,
+            request.Category,
             request.Capacity,
-            [],
-            []);
-        
-        await _eventService.CreateEvent(@event);
+            cancellationToken);
         
         return Ok();
     }
 
-    [HttpPut]
+    [HttpPut("{id:guid}")]
     [Authorize(Policy = "AdminOnly")]
-    public async Task<IActionResult> UpdateEvent([FromBody] UpdateEventRequest request)
+    public async Task<IActionResult> UpdateEvent(Guid id, [FromBody] UpdateEventRequest request, CancellationToken cancellationToken)
     {
-        var startDate = DateTime.Parse(request.StartDate).ToUniversalTime();
-        var endDate = DateTime.Parse(request.EndDate).ToUniversalTime();
-        var category = (EventCategory)request.Category;
-        
-        var @event = new Event(
-            request.Id,
+        await _eventService.UpdateEvent(
+            id,
             request.Title,
             request.Description,
-            startDate,
-            endDate,
+            request.StartDate,
+            request.EndDate,
             request.Location,
-            category,
+            request.Category,
             request.Capacity,
-            [],
-            []);
-        
-        await _eventService.UpdateEvent(@event);
+            cancellationToken);
         
         return Ok();
     }
 
-    [HttpDelete("{eventId::guid}")]
+    [HttpDelete("{id::guid}")]
     [Authorize(Policy = "AdminOnly")]
-    public async Task<IActionResult> DeleteEventById(Guid eventId)
+    public async Task<IActionResult> DeleteEventById(Guid id, CancellationToken cancellationToken)
     {
-        await _eventService.DeleteEvent(eventId);
+        await _eventService.DeleteEvent(id, cancellationToken);
         
         return Ok();
     }
@@ -137,23 +123,20 @@ public class EventController : ControllerBase
     public async Task<ActionResult<PagedResult<EventResponse>>> GetEventsByFilters(
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 10,
-        [FromQuery] string? startDate = null,
-        [FromQuery] string? endDate = null,
+        [FromQuery] DateTime? startDate = null,
+        [FromQuery] DateTime? endDate = null,
         [FromQuery] string? location = null,
-        [FromQuery] int? category = null)
+        [FromQuery] EventCategory? category = null,
+        CancellationToken cancellationToken = default)
     {
-        DateTime? parsedStartDate = string.IsNullOrEmpty(startDate) ? null : DateTime.Parse(startDate).ToUniversalTime();
-        DateTime? parsedEndDate = string.IsNullOrEmpty(endDate) ? null : DateTime.Parse(endDate).ToUniversalTime();
-        
-        EventCategory? parsedCategory = category.HasValue ? (EventCategory)category.Value : null;
-        
         var events = await _eventService.GetEventsByFilter(
             pageNumber,
             pageSize,
-            parsedStartDate,
-            parsedEndDate,
+            startDate,
+            endDate,
             location,
-            parsedCategory);
+            category,
+            cancellationToken);
         
         var response = new PagedResult<EventResponse>(
             events.Items
@@ -165,25 +148,25 @@ public class EventController : ControllerBase
         return Ok(response);
     }
 
-    [HttpPut("image/{eventId::guid}")]
+    [HttpPut("{id:guid}/image")]
     [Authorize(Policy = "AdminOnly")]
-    public async Task<IActionResult> UpdateEventImage(Guid eventId, IFormFile file)
+    public async Task<IActionResult> UpdateEventImage(Guid id, IFormFile file, CancellationToken cancellationToken)
     {
         if (file.Length == 0)
-            throw new Exception("File is empty");
+            throw new FileLoadException("File is empty");
         
         using var memoryStream = new MemoryStream();
-        await file.CopyToAsync(memoryStream);
+        await file.CopyToAsync(memoryStream, cancellationToken);
         
-        await _eventService.UpdateImageData(eventId, memoryStream.ToArray());
+        await _eventService.UpdateImageData(id, memoryStream.ToArray(), cancellationToken);
         
         return Ok();
     }
 
-    [HttpGet("image/{eventId::guid}")]
-    public async Task<IActionResult> GetImageById(Guid eventId)
+    [HttpGet("{id:guid}/image")]
+    public async Task<IActionResult> GetImageById(Guid id, CancellationToken cancellationToken)
     {
-        var imageData = await _eventService.GetImageData(eventId);
+        var imageData = await _eventService.GetImageData(id, cancellationToken);
         
         return File(imageData, "image/jpeg");
     }

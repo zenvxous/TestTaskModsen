@@ -4,7 +4,7 @@ namespace TestTaskModsen.Core.Interfaces.Repositories;
 
 public interface IRegistrationRepository
 {
-    Task RegisterUserToEventAsync(Guid userId, Guid eventId);
-    Task UnregisterUserFromEventAsync(Guid userId, Guid eventId);
-    Task<Registration> GetByUserAndEventIdAsync(Guid userId, Guid eventId);
+    Task RegisterUserToEventAsync(Guid userId, Guid eventId, CancellationToken cancellationToken);
+    Task UnregisterUserFromEventAsync(Guid userId, Guid eventId, CancellationToken cancellationToken);
+    Task<Registration> GetByUserAndEventIdAsync(Guid userId, Guid eventId, CancellationToken cancellationToken);
 }

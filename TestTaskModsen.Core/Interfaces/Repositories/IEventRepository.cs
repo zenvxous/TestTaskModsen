@@ -5,9 +5,9 @@ namespace TestTaskModsen.Core.Interfaces.Repositories;
 
 public interface IEventRepository
 {
-    Task<PagedResult<Event>> GetAllAsync(int pageNumber, int pageSize);
-    Task<Event> GetByIdAsync(Guid eventId);
-    Task<Event> GetByTitleAsync(string title);
+    Task<PagedResult<Event>> GetAllAsync(int pageNumber, int pageSize, CancellationToken cancellationToken);
+    Task<Event> GetByIdAsync(Guid eventId, CancellationToken cancellationToken);
+    Task<Event> GetByTitleAsync(string title, CancellationToken cancellationToken);
 
     Task<PagedResult<Event>> GetByFiltersAsync(
         int pageNumber,
@@ -15,10 +15,11 @@ public interface IEventRepository
         DateTime? startDate = null,
         DateTime? endDate = null,
         string? location = null,
-        EventCategory? category = null);
+        EventCategory? category = null,
+        CancellationToken cancellationToken = default);
 
-    Task CreateAsync(Event @event);
-    Task UpdateAsync(Event @event);
-    Task UpdateImageDataAsync(Guid eventId, byte[] imageData);
-    Task DeleteAsync(Guid eventId);
+    Task CreateAsync(Event @event, CancellationToken cancellationToken);
+    Task UpdateAsync(Event @event, CancellationToken cancellationToken);
+    Task UpdateImageDataAsync(Guid eventId, byte[] imageData, CancellationToken cancellationToken);
+    Task DeleteAsync(Guid eventId, CancellationToken cancellationToken);
 }
